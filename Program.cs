@@ -9,11 +9,14 @@ using AzureChatGptMiddleware.Middleware;
 using AzureChatGptMiddleware.Models; // Required for AzureOpenAIOptions
 using FluentValidation.AspNetCore;
 using AzureChatGptMiddleware.Validators;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adicionar serviços ao container
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<PromptRequestValidator>();
 builder.Services.AddEndpointsApiExplorer();
 
 // Configuração do Swagger em português
@@ -114,6 +117,11 @@ builder.Services.AddScoped<IPromptService, PromptService>();
 
 // Adicionar HttpClient para Azure OpenAI
 builder.Services.AddHttpClient<IAzureOpenAIService, AzureOpenAIService>();
+
+builder.Services.AddOptions<AzureOpenAIOptions>()
+     .Bind(builder.Configuration.GetSection("AzureOpenAI"))
+     .ValidateDataAnnotations()
+     .ValidateOnStart();
 
 var app = builder.Build();
 
