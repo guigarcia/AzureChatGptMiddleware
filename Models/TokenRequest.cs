@@ -1,12 +1,13 @@
 ﻿namespace AzureChatGptMiddleware.Models
 {
     /// <summary>
-    /// Modelo de requisição para obter token JWT
+    /// Representa os dados necessários para solicitar um token JWT utilizando uma API Key.
     /// </summary>
     public class TokenRequest
     {
         /// <summary>
-        /// Chave de API para autenticação
+        /// A API Key do cliente que está solicitando um token JWT.
+        /// Esta chave é validada antes da emissão do token.
         /// </summary>
         public string ApiKey { get; set; } = string.Empty;
     }

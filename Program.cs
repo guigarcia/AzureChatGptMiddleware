@@ -6,6 +6,9 @@ using System.Text;
 using AzureChatGptMiddleware.Data;
 using AzureChatGptMiddleware.Services;
 using AzureChatGptMiddleware.Middleware;
+using AzureChatGptMiddleware.Models; // Required for AzureOpenAIOptions
+using FluentValidation.AspNetCore;
+using AzureChatGptMiddleware.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,7 +91,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
