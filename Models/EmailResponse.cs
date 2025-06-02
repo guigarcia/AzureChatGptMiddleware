@@ -1,22 +1,23 @@
 ﻿namespace AzureChatGptMiddleware.Models
 {
     /// <summary>
-    /// Modelo de resposta do processamento de e-mail
+    /// Representa a resposta do processamento de um e-mail pela IA.
     /// </summary>
     public class EmailResponse
     {
         /// <summary>
-        /// Resposta gerada pela IA
+        /// O texto da resposta gerado pela IA para o e-mail de entrada.
         /// </summary>
         public string Response { get; set; } = string.Empty;
 
         /// <summary>
-        /// ID da requisição no banco de dados
+        /// O ID único do registro de log para esta requisição/resposta específica,
+        /// conforme armazenado no banco de dados.
         /// </summary>
         public int RequestId { get; set; }
 
         /// <summary>
-        /// Data e hora do processamento
+        /// A data e hora (em UTC) em que o processamento do e-mail foi concluído.
         /// </summary>
         public DateTime ProcessedAt { get; set; }
     }
