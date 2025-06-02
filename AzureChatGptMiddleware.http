@@ -1,0 +1,6 @@
+@AzureChatGptMiddleware_HostAddress = http://localhost:5062
+
+GET {{AzureChatGptMiddleware_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
