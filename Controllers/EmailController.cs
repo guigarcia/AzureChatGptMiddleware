@@ -80,7 +80,7 @@ namespace AzureChatGptMiddleware.Controllers
                 {
                     // Se o log falhar, o erro principal já ocorreu (OpenAI), ou este é um novo erro.
                     // Loga a falha no log e retorna o erro 500, pois o processamento principal (OpenAI) teve sucesso, mas o log não.
-                    _logger.LogError(logEx, "Falha ao registrar log de sucesso para processamento de e-mail. ClientInfo: {ClientInfo}. Resposta da IA (omitida no log por segurança, mas foi): {AIReponseCharCount} chars.", clientInfo, aiResponse.Length);
+                    _logger.LogError(logEx, "Falha ao registrar log de sucesso para processamento de e-mail. ClientInfo: {ClientInfo}. Resposta da IA (omitida no log por segurança, mas foi): {AIResponseCharCount} chars.", clientInfo, aiResponse.Length);
                     // Decide-se retornar 500 pois uma parte crítica (auditoria/log) falhou, mesmo que a IA tenha respondido.
                     // Alternativamente, poderia retornar Ok e apenas logar o erro do log.
                     return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel { Message = "E-mail processado, mas falha ao registrar o log da requisição." });
