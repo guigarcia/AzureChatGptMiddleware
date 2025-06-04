@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.36105.23 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureChatGptMiddleware", "AzureChatGptMiddleware.csproj", "{7CD08B58-29A5-422B-B9CF-66CED3BBE782}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureChatGptMiddleware.Tests", "AzureChatGptMiddleware.Tests\AzureChatGptMiddleware.Tests.csproj", "{97F65C08-916C-40FA-920F-F04831588C68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{7CD08B58-29A5-422B-B9CF-66CED3BBE782}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CD08B58-29A5-422B-B9CF-66CED3BBE782}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CD08B58-29A5-422B-B9CF-66CED3BBE782}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97F65C08-916C-40FA-920F-F04831588C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97F65C08-916C-40FA-920F-F04831588C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97F65C08-916C-40FA-920F-F04831588C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97F65C08-916C-40FA-920F-F04831588C68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
