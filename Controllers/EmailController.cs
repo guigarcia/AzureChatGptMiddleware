@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AzureChatGptMiddleware.Models; // Assegura que ErrorResponseModel está acessível
 using AzureChatGptMiddleware.Services;
-using AzureChatGptMiddleware.Exceptions; // Para AzureOpenAIComunicationException
+using AzureChatGptMiddleware.Exceptions; // Para AzureOpenAICommunicationException
 using Microsoft.AspNetCore.Http; // Necessário para StatusCodes
 
 namespace AzureChatGptMiddleware.Controllers
@@ -40,7 +40,7 @@ namespace AzureChatGptMiddleware.Controllers
         /// <response code="400">Requisição inválida. Ocorre se o conteúdo do e-mail não atender aos critérios de validação (ex: ausente, tamanho excedido - via FluentValidation).</response>
         /// <response code="401">Não autorizado. Ocorre se o token JWT ou a API Key forem inválidos ou ausentes.</response>
         /// <response code="500">Erro interno do servidor. Pode ocorrer devido a falhas na comunicação com o Azure OpenAI Service, problemas no serviço de log, ou outras exceções inesperadas.</response>
-        /// <response code="503">Serviço indisponível. Pode ser retornado especificamente se o Azure OpenAI Service estiver inacessível ou retornar um erro indicando indisponibilidade (requer tratamento da AzureOpenAIComunicationException).</response>
+        /// <response code="503">Serviço indisponível. Pode ser retornado especificamente se o Azure OpenAI Service estiver inacessível ou retornar um erro indicando indisponibilidade (requer tratamento da AzureOpenAICommunicationException).</response>
         [HttpPost("process")]
         [ProducesResponseType(typeof(EmailResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseModel), StatusCodes.Status400BadRequest)] // Também pode ser ValidationProblemDetails
@@ -86,10 +86,10 @@ namespace AzureChatGptMiddleware.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel { Message = "E-mail processado, mas falha ao registrar o log da requisição." });
                 }
             }
-            catch (AzureOpenAIComunicationException openAIEx)
+            catch (AzureOpenAICommunicationException openAIEx)
             {
                 _logger.LogError(openAIEx, "Erro de comunicação com Azure OpenAI Service ao processar e-mail. ClientInfo: {ClientInfo}. Status Code: {StatusCode}. ErrorContent: {ErrorContent}", clientInfo, openAIEx.StatusCode, openAIEx.ErrorResponseContent);
-                await TryLogErrorToDatabase(request.Message, $"AzureOpenAIComunicationException: {openAIEx.Message} (StatusCode: {openAIEx.StatusCode})", clientInfo);
+                await TryLogErrorToDatabase(request.Message, $"AzureOpenAICommunicationException: {openAIEx.Message} (StatusCode: {openAIEx.StatusCode})", clientInfo);
 
                 // Retorna 503 se for um erro de comunicação/serviço claro, senão 500.
                 if (openAIEx.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable ||

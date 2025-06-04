@@ -8,7 +8,7 @@ namespace AzureChatGptMiddleware.Exceptions
     /// Isso pode incluir erros de rede, timeouts, status codes de erro HTTP da API,
     /// ou problemas ao processar a resposta da API (ex: JSON malformado).
     /// </summary>
-    public class AzureOpenAIComunicationException : Exception
+    public class AzureOpenAICommunicationException : Exception
     {
         /// <summary>
         /// O código de status HTTP retornado pela API do Azure OpenAI, se aplicável.
@@ -21,32 +21,32 @@ namespace AzureChatGptMiddleware.Exceptions
         public string? ErrorResponseContent { get; }
 
         /// <summary>
-        /// Inicializa uma nova instância da classe <see cref="AzureOpenAIComunicationException"/>.
+        /// Inicializa uma nova instância da classe <see cref="AzureOpenAICommunicationException"/>.
         /// </summary>
         /// <param name="message">A mensagem que descreve o erro.</param>
-        public AzureOpenAIComunicationException(string message)
+        public AzureOpenAICommunicationException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Inicializa uma nova instância da classe <see cref="AzureOpenAIComunicationException"/>.
+        /// Inicializa uma nova instância da classe <see cref="AzureOpenAICommunicationException"/>.
         /// </summary>
         /// <param name="message">A mensagem que descreve o erro.</param>
         /// <param name="innerException">A exceção que é a causa da exceção atual.</param>
-        public AzureOpenAIComunicationException(string message, Exception innerException)
+        public AzureOpenAICommunicationException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
         /// <summary>
-        /// Inicializa uma nova instância da classe <see cref="AzureOpenAIComunicationException"/>.
+        /// Inicializa uma nova instância da classe <see cref="AzureOpenAICommunicationException"/>.
         /// </summary>
         /// <param name="message">A mensagem que descreve o erro.</param>
         /// <param name="statusCode">O código de status HTTP retornado pela API.</param>
         /// <param name="errorResponseContent">O conteúdo da resposta de erro da API.</param>
         /// <param name="innerException">A exceção que é a causa da exceção atual (opcional).</param>
-        public AzureOpenAIComunicationException(
+        public AzureOpenAICommunicationException(
             string message,
             HttpStatusCode statusCode,
             string? errorResponseContent = null,
