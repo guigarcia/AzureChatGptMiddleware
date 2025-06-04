@@ -2,6 +2,7 @@
 using AzureChatGptMiddleware.Models;
 using AzureChatGptMiddleware.Services;
 using Microsoft.AspNetCore.Http; // Necessário para StatusCodes
+using Microsoft.Extensions.Configuration;
 
 namespace AzureChatGptMiddleware.Controllers
 {
@@ -15,13 +16,13 @@ namespace AzureChatGptMiddleware.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly ILogger<AuthController> _logger;
-        // IConfiguration não é usado diretamente no construtor lido, removido por enquanto.
-        // Se fosse necessário para ExpirationMinutes, seria reinjetado.
+        private readonly IConfiguration _configuration;
 
-        public AuthController(ITokenService tokenService, ILogger<AuthController> logger)
+        public AuthController(ITokenService tokenService, ILogger<AuthController> logger, IConfiguration configuration)
         {
             _tokenService = tokenService;
             _logger = logger;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -60,13 +61,10 @@ namespace AzureChatGptMiddleware.Controllers
                     return Unauthorized(new ErrorResponseModel { Message = "API Key inválida." });
                 }
 
-                // A configuração de ExpirationMinutes idealmente viria de IConfiguration.
-                // Como IConfiguration foi removido do construtor (baseado no código lido),
-                // vou usar um valor fixo, mas isso deve ser ajustado para usar IConfiguration.
-                // Adicionarei um TODO para isso.
-                // TODO: Obter ExpirationMinutes de IConfiguration para consistência com a intenção original.
                 var token = _tokenService.GenerateToken();
-                var expiresAt = DateTime.UtcNow.AddMinutes(60); // Exemplo: 60 minutos. Idealmente de config.
+                var expirationMinutesValue = _configuration["JwtSettings:ExpirationMinutes"];
+                var expirationMinutes = string.IsNullOrWhiteSpace(expirationMinutesValue) ? 60 : Convert.ToDouble(expirationMinutesValue);
+                var expiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
 
                 _logger.LogInformation("Token JWT gerado com sucesso via API Key.");
 
