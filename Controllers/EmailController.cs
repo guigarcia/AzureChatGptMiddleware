@@ -49,9 +49,6 @@ namespace AzureChatGptMiddleware.Controllers
         [ProducesResponseType(typeof(ErrorResponseModel), StatusCodes.Status503ServiceUnavailable)]
         public async Task<IActionResult> ProcessEmail([FromBody] EmailRequest request)
         {
-            // A validação do modelo (ex: Message obrigatório) é esperada ser tratada
-            // pelo pipeline do ASP.NET Core e FluentValidation.
-
             var clientInfo = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "IP Desconhecido";
             _logger.LogInformation("Iniciando processamento de e-mail para o cliente {ClientInfo}. Tamanho da mensagem: {MessageLength} caracteres.", clientInfo, request.Message?.Length ?? 0);
 
@@ -59,7 +56,6 @@ namespace AzureChatGptMiddleware.Controllers
             {
                 var aiResponse = await _azureOpenAIService.ProcessEmailAsync(request.Message);
 
-                // Registrar log de sucesso
                 try
                 {
                     var log = await _requestLogService.LogRequestAsync(
@@ -78,11 +74,7 @@ namespace AzureChatGptMiddleware.Controllers
                 }
                 catch (Exception logEx)
                 {
-                    // Se o log falhar, o erro principal já ocorreu (OpenAI), ou este é um novo erro.
-                    // Loga a falha no log e retorna o erro 500, pois o processamento principal (OpenAI) teve sucesso, mas o log não.
                     _logger.LogError(logEx, "Falha ao registrar log de sucesso para processamento de e-mail. ClientInfo: {ClientInfo}. Resposta da IA (omitida no log por segurança, mas foi): {AIResponseCharCount} chars.", clientInfo, aiResponse.Length);
-                    // Decide-se retornar 500 pois uma parte crítica (auditoria/log) falhou, mesmo que a IA tenha respondido.
-                    // Alternativamente, poderia retornar Ok e apenas logar o erro do log.
                     return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel { Message = "E-mail processado, mas falha ao registrar o log da requisição." });
                 }
             }
@@ -91,11 +83,10 @@ namespace AzureChatGptMiddleware.Controllers
                 _logger.LogError(openAIEx, "Erro de comunicação com Azure OpenAI Service ao processar e-mail. ClientInfo: {ClientInfo}. Status Code: {StatusCode}. ErrorContent: {ErrorContent}", clientInfo, openAIEx.StatusCode, openAIEx.ErrorResponseContent);
                 await TryLogErrorToDatabase(request.Message, $"AzureOpenAICommunicationException: {openAIEx.Message} (StatusCode: {openAIEx.StatusCode})", clientInfo);
 
-                // Retorna 503 se for um erro de comunicação/serviço claro, senão 500.
                 if (openAIEx.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable ||
                     openAIEx.StatusCode == System.Net.HttpStatusCode.GatewayTimeout ||
                     openAIEx.InnerException is HttpRequestException ||
-                    openAIEx.InnerException is TaskCanceledException) // TaskCanceledException pode ser timeout
+                    openAIEx.InnerException is TaskCanceledException) 
                 {
                     return StatusCode(StatusCodes.Status503ServiceUnavailable, new ErrorResponseModel { Message = "O serviço do Azure OpenAI está temporariamente indisponível ou houve um problema de comunicação. Tente novamente mais tarde." });
                 }
@@ -115,14 +106,13 @@ namespace AzureChatGptMiddleware.Controllers
             {
                 await _requestLogService.LogRequestAsync(
                     originalRequest,
-                    string.Empty, // Sem resposta da IA em caso de erro
-                    false,        // Sucesso = false
+                    string.Empty, 
+                    false,        
                     errorMessage,
                     clientInfo);
             }
             catch (Exception dbLogEx)
             {
-                // Se o log no banco de dados falhar também, apenas loga no sistema de log principal.
                 _logger.LogError(dbLogEx, "Falha crítica: Erro ao tentar registrar falha de processamento de e-mail no banco de dados. Mensagem original do erro: {OriginalErrorMessage}", errorMessage);
             }
         }

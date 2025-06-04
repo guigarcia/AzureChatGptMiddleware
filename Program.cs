@@ -29,8 +29,8 @@ builder.Services.AddSwaggerGen(c =>
         Description = "API para intermediar requisições entre aplicações e o Azure ChatGPT",
         Contact = new OpenApiContact
         {
-            Name = "Suporte Hughes",
-            Email = "atendimento@hughes.net.br"
+            Name = "TP - Transformação Digital",
+            Email = "lima.4830@teleperformance.com.br"
         }
     });
 
@@ -114,9 +114,18 @@ builder.Services.AddScoped<IAzureOpenAIService, AzureOpenAIService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRequestLogService, RequestLogService>();
 builder.Services.AddScoped<IPromptService, PromptService>();
+builder.Services.AddScoped<IAzureOpenAIService, AzureOpenAIService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRequestLogService, RequestLogService>();
+builder.Services.AddScoped<IPromptService, PromptService>();
 
-// Adicionar HttpClient para Azure OpenAI
-builder.Services.AddHttpClient<IAzureOpenAIService, AzureOpenAIService>();
+// Configurar as opções do Azure OpenAI
+builder.Services.AddOptions<AzureOpenAIOptions>()
+     .Bind(builder.Configuration.GetSection("AzureOpenAI"))
+     .ValidateDataAnnotations()
+     .ValidateOnStart();
+
+
 
 builder.Services.AddOptions<AzureOpenAIOptions>()
      .Bind(builder.Configuration.GetSection("AzureOpenAI"))
@@ -129,6 +138,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.EnsureDeleted();
     dbContext.Database.Migrate();
 
     // Criar prompt padrão se não existir

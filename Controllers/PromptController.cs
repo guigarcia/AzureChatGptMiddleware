@@ -89,20 +89,16 @@ namespace AzureChatGptMiddleware.Controllers
         /// <response code="500">Erro interno do servidor.</response>
         [HttpPost]
         [ProducesResponseType(typeof(PromptResponse), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ErrorResponseModel), StatusCodes.Status400BadRequest)] // Também pode ser ValidationProblemDetails se FluentValidation estiver totalmente integrado ao pipeline para respostas automáticas.
+        [ProducesResponseType(typeof(ErrorResponseModel), StatusCodes.Status400BadRequest)] 
         [ProducesResponseType(typeof(ErrorResponseModel), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Create([FromBody] PromptRequest request)
         {
             try
             {
-                // A validação do modelo (ex: campos obrigatórios, tamanho) é esperada ser tratada
-                // pelo pipeline do ASP.NET Core e FluentValidation antes de chegar aqui.
-                // Se ModelState.IsValid fosse verificado aqui, seria um fallback.
-
                 var createdPromptEntity = await _promptService.CreatePromptAsync(request);
                 _logger.LogInformation("Prompt '{PromptName}' (ID: {PromptId}) criado com sucesso.", createdPromptEntity.Name, createdPromptEntity.Id);
 
-                var responseDto = new PromptResponse // Mapeamento para DTO
+                var responseDto = new PromptResponse
                 {
                     Id = createdPromptEntity.Id,
                     Name = createdPromptEntity.Name,
@@ -113,7 +109,7 @@ namespace AzureChatGptMiddleware.Controllers
                 };
                 return CreatedAtAction(nameof(GetById), new { id = responseDto.Id }, responseDto);
             }
-            catch (InvalidOperationException ex) // Ex: Nome de prompt duplicado
+            catch (InvalidOperationException ex) 
             {
                 _logger.LogWarning(ex, "Falha ao criar prompt devido a uma operação inválida: {ErrorMessage}", ex.Message);
                 return BadRequest(new ErrorResponseModel { Message = ex.Message });
@@ -147,7 +143,7 @@ namespace AzureChatGptMiddleware.Controllers
                 var updatedPromptEntity = await _promptService.UpdatePromptAsync(id, request);
                 _logger.LogInformation("Prompt ID {PromptId} ('{PromptName}') atualizado com sucesso.", updatedPromptEntity.Id, updatedPromptEntity.Name);
                 
-                var responseDto = new PromptResponse // Mapeamento para DTO
+                var responseDto = new PromptResponse 
                 {
                     Id = updatedPromptEntity.Id,
                     Name = updatedPromptEntity.Name,
@@ -158,10 +154,10 @@ namespace AzureChatGptMiddleware.Controllers
                 };
                 return Ok(responseDto);
             }
-            catch (InvalidOperationException ex) // Ex: Prompt não encontrado pelo serviço
+            catch (InvalidOperationException ex) 
             {
                 _logger.LogWarning(ex, "Falha ao atualizar prompt ID {PromptId} devido a uma operação inválida (ex: não encontrado): {ErrorMessage}", id, ex.Message);
-                return NotFound(new ErrorResponseModel { Message = ex.Message }); // O serviço lança InvalidOperationException para "não encontrado"
+                return NotFound(new ErrorResponseModel { Message = ex.Message }); 
             }
             catch (Exception ex)
             {

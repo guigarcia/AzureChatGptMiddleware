@@ -14,8 +14,6 @@ namespace AzureChatGptMiddleware.Services
         private readonly ApplicationDbContext _context;
         private readonly ILogger<PromptService> _logger;
 
-        // Conteúdo do prompt padrão utilizado como fallback se nenhum prompt ativo específico for encontrado
-        // ou se o prompt "email_response" não estiver configurado no banco.
         private const string DefaultPromptContent = @"Escreva o e-mail de resposta ao cliente para um produto de internet via satélite, garantindo que a comunicação seja
 acolhedora, clara e assertiva. O tom deve transmitir empatia e profissionalismo, proporcionando uma experiência positiva ao
 cliente. O e-mail sempre deve estar em primeira pessoa, em que a resposta seja sempre entendida que o atendente que o
@@ -57,7 +55,7 @@ dados e muito mais!'";
             // o mais recente (baseado em UpdatedAt, depois CreatedAt) será usado.
             var prompt = await _context.Prompts
                 .Where(p => p.Name == name && p.IsActive)
-                .OrderByDescending(p => p.UpdatedAt ?? p.CreatedAt) // Prioriza o mais recentemente atualizado
+                .OrderByDescending(p => p.UpdatedAt ?? p.CreatedAt) 
                 .FirstOrDefaultAsync();
 
             if (prompt == null)

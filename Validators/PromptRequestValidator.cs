@@ -3,11 +3,7 @@ using FluentValidation;
 
 namespace AzureChatGptMiddleware.Validators
 {
-    /// <summary>
-    /// Define as regras de validação para o modelo <see cref="PromptRequest"/>.
-    /// Estas regras são aplicadas automaticamente pelo pipeline do ASP.NET Core
-    /// quando o FluentValidation é registrado e os validadores são descobertos.
-    /// </summary>
+  
     public class PromptRequestValidator : AbstractValidator<PromptRequest>
     {
         public PromptRequestValidator()
