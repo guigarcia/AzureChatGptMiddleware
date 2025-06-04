@@ -107,6 +107,18 @@ dados e muito mais!'";
                 throw new InvalidOperationException($"Prompt com ID {id} não encontrado");
             }
 
+            // Verifica se o novo nome já está sendo utilizado por outro prompt
+            if (!string.Equals(prompt.Name, request.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                var duplicate = await _context.Prompts
+                    .AnyAsync(p => p.Name == request.Name && p.Id != id);
+
+                if (duplicate)
+                {
+                    throw new InvalidOperationException($"Já existe um prompt com o nome '{request.Name}'");
+                }
+            }
+
             prompt.Name = request.Name;
             prompt.Content = request.Content;
             prompt.IsActive = request.IsActive;
