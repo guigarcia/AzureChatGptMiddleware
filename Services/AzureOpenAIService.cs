@@ -57,13 +57,13 @@ namespace AzureChatGptMiddleware.Services
             //        - Extrai o texto da primeira "choice" da IA.
             //        - Retorna o texto da IA ou uma mensagem de erro se o conteúdo estiver nulo.
             //    - Em caso de falha na chamada HTTP (ex: timeout, erro de rede):
-            //        - Lança AzureOpenAIComunicationException com detalhes do erro HTTP.
+            //        - Lança AzureOpenAICommunicationException com detalhes do erro HTTP.
             //    - Em caso de resposta da API com status de erro (não-2xx):
             //        - Lê o corpo do erro da API.
-            //        - Lança AzureOpenAIComunicationException com status code e corpo do erro.
+            //        - Lança AzureOpenAICommunicationException com status code e corpo do erro.
             //    - Em caso de JSON de resposta bem-sucedida, mas malformado ou com campos ausentes:
-            //        - Lança AzureOpenAIComunicationException com detalhes do erro de parsing.
-            // 6. Exceções inesperadas durante o processo também são capturadas e encapsuladas em AzureOpenAIComunicationException.
+            //        - Lança AzureOpenAICommunicationException com detalhes do erro de parsing.
+            // 6. Exceções inesperadas durante o processo também são capturadas e encapsuladas em AzureOpenAICommunicationException.
             try
             {
                 var systemPrompt = await _promptService.GetActivePromptContentAsync("email_response");
@@ -95,12 +95,12 @@ namespace AzureChatGptMiddleware.Services
                 catch (HttpRequestException httpEx) // Erros de rede, DNS, etc.
                 {
                     _logger.LogError(httpEx, "Erro de HttpRequest ao chamar Azure OpenAI API. URI: {RequestUri}", requestUri);
-                    throw new AzureOpenAIComunicationException($"Erro na comunicação HTTP com Azure OpenAI ao tentar acessar {requestUri}.", httpEx);
+                    throw new AzureOpenAICommunicationException($"Erro na comunicação HTTP com Azure OpenAI ao tentar acessar {requestUri}.", httpEx);
                 }
                 catch (TaskCanceledException timeoutEx) // Captura timeouts do HttpClient.
                 {
                     _logger.LogError(timeoutEx, "Timeout ao chamar Azure OpenAI API. URI: {RequestUri}", requestUri);
-                    throw new AzureOpenAIComunicationException($"Timeout na comunicação com Azure OpenAI ao tentar acessar {requestUri}.", timeoutEx);
+                    throw new AzureOpenAICommunicationException($"Timeout na comunicação com Azure OpenAI ao tentar acessar {requestUri}.", timeoutEx);
                 }
 
                 // Processa a resposta da API.
@@ -123,18 +123,18 @@ namespace AzureChatGptMiddleware.Services
                         {
                             // Resposta OK, mas sem o array 'choices' esperado.
                             _logger.LogWarning("Resposta da API Azure OpenAI bem-sucedida (Status: {StatusCode}), mas array 'choices' está vazio. Conteúdo: {ResponseContent}", response.StatusCode, responseContent);
-                            throw new AzureOpenAIComunicationException($"Resposta da API Azure OpenAI (Status: {response.StatusCode}) não continha 'choices' esperados.");
+                            throw new AzureOpenAICommunicationException($"Resposta da API Azure OpenAI (Status: {response.StatusCode}) não continha 'choices' esperados.");
                         }
                     }
                     catch (JsonException jsonEx) // Erro ao parsear o JSON.
                     {
                         _logger.LogError(jsonEx, "Erro ao parsear JSON da resposta da API Azure OpenAI (Status: {StatusCode}). Conteúdo: {ResponseContent}", response.StatusCode, responseContent);
-                        throw new AzureOpenAIComunicationException($"Erro ao interpretar a resposta JSON da API Azure OpenAI (Status: {response.StatusCode}).", jsonEx);
+                        throw new AzureOpenAICommunicationException($"Erro ao interpretar a resposta JSON da API Azure OpenAI (Status: {response.StatusCode}).", jsonEx);
                     }
                     catch (KeyNotFoundException keyEx) // Estrutura do JSON diferente do esperado.
                     {
                         _logger.LogError(keyEx, "Campo esperado não encontrado no JSON da resposta da API Azure OpenAI (Status: {StatusCode}). Conteúdo: {ResponseContent}", response.StatusCode, responseContent);
-                        throw new AzureOpenAIComunicationException($"Resposta da API Azure OpenAI (Status: {response.StatusCode}) com formato inesperado.", keyEx);
+                        throw new AzureOpenAICommunicationException($"Resposta da API Azure OpenAI (Status: {response.StatusCode}) com formato inesperado.", keyEx);
                     }
                 }
                 else
@@ -142,21 +142,21 @@ namespace AzureChatGptMiddleware.Services
                     // A API retornou um status code de erro (não-2xx).
                     var errorContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     _logger.LogError("Erro na API Azure OpenAI. Status: {StatusCode}. Resposta: {ErrorContent}. URI: {RequestUri}", response.StatusCode, errorContent, requestUri);
-                    throw new AzureOpenAIComunicationException(
+                    throw new AzureOpenAICommunicationException(
                         $"Erro ao comunicar com Azure OpenAI. Status: {response.StatusCode}. URI: {requestUri}.",
                         response.StatusCode,
                         errorContent);
                 }
             }
-            catch (AzureOpenAIComunicationException) // Se já for a exceção customizada, apenas a relança.
+            catch (AzureOpenAICommunicationException) // Se já for a exceção customizada, apenas a relança.
             {
                 throw;
             }
             catch (Exception ex) // Captura qualquer outra exceção inesperada.
             {
                 _logger.LogError(ex, "Erro inesperado ao processar e-mail com Azure OpenAI.");
-                // Encapsula em AzureOpenAIComunicationException para padronizar o tratamento de erros.
-                throw new AzureOpenAIComunicationException("Erro inesperado no serviço Azure OpenAI.", ex);
+                // Encapsula em AzureOpenAICommunicationException para padronizar o tratamento de erros.
+                throw new AzureOpenAICommunicationException("Erro inesperado no serviço Azure OpenAI.", ex);
             }
         }
     }
